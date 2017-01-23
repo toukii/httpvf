@@ -1,0 +1,14 @@
+-
+  url: https://baidu.com
+  body: hello
+  resp:
+    code: 200
+    cost: 10
+    body: world
+-
+  url: https://baidu.com
+  body: hello
+  resp:
+    code: 200
+    cost: 10
+    body: world

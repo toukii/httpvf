@@ -1,5 +1,6 @@
-req:
- code:200
- cost:100ms
- body:
-  {'a':true}
+url: https://baidu.com
+body: hell0
+resp:
+  code: 200
+  cost: 10
+  body: world
