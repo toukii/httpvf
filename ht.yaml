@@ -2,4 +2,4 @@ req:
  code:200
  cost:100ms
  body:
-  retmsg:ok
+  {'a':true}
