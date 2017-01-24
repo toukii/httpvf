@@ -1,2 +1,2 @@
-# httptst
-http test
+# httpvf
+http REST API verify
