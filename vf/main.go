@@ -14,7 +14,10 @@ func main() {
 func t2()  {
 	reqs,_:=httpvf.Reqs("hts.yaml")
 	for _,it := range reqs{
-		httpvf.Verify(it)
+		msg := httpvf.Verify(&it)
+		if nil != msg {
+			fmt.Println(msg)
+		}
 	}
 }
 
