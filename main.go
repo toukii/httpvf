@@ -21,7 +21,7 @@ type Req struct {
 }
 
 func main() {
-	t1()
+	//t1()
 	t2()
 }
 
