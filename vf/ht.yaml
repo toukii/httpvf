@@ -1,4 +1,5 @@
-url: https://baidu.com
+url: http://upload.daoapp.io/
+method: GET
 body: hell0
 resp:
   code: 200

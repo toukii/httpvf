@@ -12,6 +12,6 @@
   method: POST
   body: hello
   resp:
-    code: 200
-    cost: 10
+    code: 404
+    cost: 100
     body: world

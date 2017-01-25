@@ -6,12 +6,12 @@ type Msg struct {
 	ErrList []string
 }
 
-func NewMsg()*Msg  {
+func NewMsg() *Msg {
 	return &Msg{
-		ErrList:make([]string,0,1),
+		ErrList: make([]string, 0, 3),
 	}
 }
 
-func (m Msg) String() string  {
+func (m Msg) String() string {
 	return fmt.Sprintf("%#v\n", m.ErrList)
 }

@@ -1,56 +1,65 @@
 package httpvf
 
-
 import (
-	yaml "gopkg.in/yaml.v2"
-	"github.com/toukii/goutils"
 	"fmt"
+	"github.com/toukii/goutils"
+	yaml "gopkg.in/yaml.v2"
 )
 
-type Resp struct{
+type Resp struct {
 	Code int
 	Cost int
 	Body string
 }
 
-const(
-	GET = "GET"
+const (
+	GET  = "GET"
 	POST = "POST"
 )
 
 type Req struct {
-	URL string
+	URL    string
 	Method string
-	Body string
-	Resp Resp
+	Body   string
+	Resp   Resp
 }
 
-func Reqs(filename string) (reqs []Req,err error) {
-	in:=goutils.ReadFile(filename)
-
-	err=yaml.Unmarshal(in, &reqs)
-	if goutils.CheckErr(err) {
-		return nil,err
+func Reqs(filename string) (reqs []*Req, err error) {
+	in := goutils.ReadFile(filename)
+	reqs = make([]*Req, 0, 1)
+	if len(in) > 0 && in[0] != byte('-') {
+		var req1 *Req
+		req1, err = req(in)
+		if goutils.CheckErr(err) {
+			return nil, err
+		}
+		reqs = append(reqs, req1)
+		return
 	}
-	return reqs,nil
+	err = yaml.Unmarshal(in, &reqs)
+	if goutils.CheckErr(err) {
+		return nil, err
+	}
+	return reqs, nil
 }
 
-func Req1(filename string)(*Req, error) {
-	bs:=goutils.ReadFile(filename)
-
+func req(in []byte) (*Req, error) {
 	var req Req
-	err := yaml.Unmarshal(bs,&req)
-	if goutils.CheckErr(err){
+	err := yaml.Unmarshal(in, &req)
+	if goutils.CheckErr(err) {
 		return nil, err
 	}
 
+	return &req, nil
+}
+
+func Test() {
+	var req Req
 	req.Body = "hello"
 	req.Resp.Body = "world"
 	req.Method = GET
-	reqs:=[]Req{req,req}
-	bs2,err:=yaml.Marshal(reqs)
+	reqs := []Req{req, req}
+	bs2, err := yaml.Marshal(reqs)
 	goutils.CheckErr(err)
 	fmt.Print(goutils.ToString(bs2))
-
-	return &req,nil
 }
