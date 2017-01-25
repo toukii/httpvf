@@ -55,11 +55,18 @@ func req(in []byte) (*Req, error) {
 
 func Test() {
 	var req Req
-	req.Body = "hello"
+	req.URL = "http://upload.daoapp.io/upload/a.json"
+	req.Body = fmt.Sprintf(`{"name":"toukii"}`)
 	req.Resp.Body = "world"
 	req.Method = GET
 	reqs := []Req{req, req}
 	bs2, err := yaml.Marshal(reqs)
 	goutils.CheckErr(err)
-	fmt.Print(goutils.ToString(bs2))
+	fmt.Println(goutils.ToString(bs2))
+
+	reqs2 := []Req{}
+	err = yaml.Unmarshal(bs2, &reqs2)
+	goutils.CheckErr(err)
+	fmt.Println(reqs2)
+
 }

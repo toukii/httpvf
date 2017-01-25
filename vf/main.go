@@ -7,8 +7,9 @@ import (
 )
 
 func main() {
+	// test()
 	t1()
-	t2()
+	// t2()
 }
 
 func t2() {
@@ -29,4 +30,8 @@ func t1() {
 			fmt.Println(msg)
 		}
 	}
+}
+
+func test() {
+	httpvf.Test()
 }

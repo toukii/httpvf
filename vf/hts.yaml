@@ -4,7 +4,7 @@
   body: hello
   resp:
     code: 200
-    cost: 100
+    cost: 70
     body: world
 
 -
@@ -12,6 +12,14 @@
   method: POST
   body: hello
   resp:
-    code: 404
-    cost: 100
+    code: 403
+    cost: 70
+    body: world
+-
+  url: http://upload.daoapp.io/
+  method: GET
+  body: hell0
+  resp:
+    code: 200
+    cost: 10
     body: world
