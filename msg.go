@@ -10,7 +10,7 @@ const (
 )
 
 var (
-	MsgLevel = WARN // msg 的级别
+	MsgLevel = INFO // msg 的级别
 )
 
 type Msg struct {
@@ -24,18 +24,14 @@ type Msg struct {
 
 func (m *Msg) Append(level, out string) {
 	switch level {
-	case "INFO":
-		m.InfoLog = append(m.InfoLog, newLog(level, out))
-		break
-	case "WARN":
-		m.WarnLog = append(m.WarnLog, newLog(level, out))
-		break
-	case "ERROR":
-		m.ErrorLog = append(m.ErrorLog, newLog(level, out))
-		break
 	case "FATAL":
 		m.FatalLog = append(m.FatalLog, newLog(level, out))
-		break
+	case "ERROR":
+		m.ErrorLog = append(m.ErrorLog, newLog(level, out))
+	case "WARN":
+		m.WarnLog = append(m.WarnLog, newLog(level, out))
+	case "INFO":
+		m.InfoLog = append(m.InfoLog, newLog(level, out))
 	}
 }
 
@@ -63,27 +59,30 @@ func newLog(level, out string) *Log {
 }
 
 func (m Msg) String() string {
-	var logs []*Log
+	// var logs []*Log
+	logs := make([]*Log, 0, 10)
 	switch MsgLevel {
 	case "INFO":
-		logs = m.InfoLog
-		break
+		logs = append(logs, m.FatalLog...)
+		logs = append(logs, m.ErrorLog...)
+		logs = append(logs, m.WarnLog...)
+		logs = append(logs, m.InfoLog...)
 	case "WARN":
-		logs = m.WarnLog
-		break
+		logs = append(logs, m.FatalLog...)
+		logs = append(logs, m.ErrorLog...)
+		logs = append(logs, m.WarnLog...)
 	case "ERROR":
-		logs = m.ErrorLog
-		break
+		logs = append(logs, m.FatalLog...)
+		logs = append(logs, m.ErrorLog...)
 	case "FATAL":
-		logs = m.FatalLog
-		break
+		logs = append(logs, m.FatalLog...)
 	}
 	if len(logs) <= 0 {
 		return ""
 	}
-	ret := fmt.Sprintf("# request [%s] error:\n", m.req.URL)
+	ret := fmt.Sprintf("# %s\n", m.req.URL)
 	for i, it := range logs {
-		ret += fmt.Sprintf("%d. %s\n", i+1, it.Out)
+		ret += fmt.Sprintf("%d. [%s] %s\n", i+1, it.Level, it.Out)
 	}
 	return ret
 }

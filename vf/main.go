@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
+	httpvf.MsgLevel = httpvf.INFO
 	// test()
-	t1()
-	// t2()
+	// t1()
+	t2()
 }
 
 func t2() {
@@ -26,6 +27,7 @@ func t1() {
 	reqs, _ := httpvf.Reqs("ht.yaml")
 	for _, it := range reqs {
 		msg := httpvf.Verify(it)
+		fmt.Println(msg)
 		if nil != msg {
 			fmt.Println(msg)
 		}

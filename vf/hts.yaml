@@ -4,7 +4,7 @@
   body: hello
   resp:
     code: 200
-    cost: 70
+    cost: 80
     body: world
 
 -
@@ -13,7 +13,7 @@
   body: hello
   resp:
     code: 403
-    cost: 70
+    cost: 90
     body: world
 -
   url: http://upload.daoapp.io/

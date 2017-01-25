@@ -34,8 +34,5 @@ func Verify(req *Req) *Msg {
 	if req.Resp.Code != resp.StatusCode {
 		msg.ErrList = append(msg.ErrList, fmt.Sprintf("error code::%d gotten, %d wanted", resp.StatusCode, req.Resp.Code))
 	}
-	if len(msg.ErrList) <= 0 {
-		return nil
-	}
 	return msg
 }
