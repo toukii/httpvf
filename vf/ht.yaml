@@ -1,7 +1,0 @@
-url: http://localhost:4000/r2
-method: POST
-body: '{"name":"toukii"}'
-resp:
-  code: 200
-  cost: 10
-  body: success

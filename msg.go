@@ -15,7 +15,6 @@ var (
 
 type Msg struct {
 	req      *Req
-	ErrList  []string
 	InfoLog  []*Log
 	WarnLog  []*Log
 	ErrorLog []*Log
@@ -38,7 +37,6 @@ func (m *Msg) Append(level, out string) {
 func newMsg(req *Req) *Msg {
 	return &Msg{
 		req:      req,
-		ErrList:  make([]string, 0, 3),
 		InfoLog:  make([]*Log, 0, 3),
 		WarnLog:  make([]*Log, 0, 3),
 		ErrorLog: make([]*Log, 0, 3),

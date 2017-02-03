@@ -22,6 +22,7 @@ type Req struct {
 	Method string
 	Body   string
 	Resp   Resp
+	Filename string
 }
 
 func Reqs(filename string) (reqs []*Req, err error) {
