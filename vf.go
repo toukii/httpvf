@@ -8,11 +8,11 @@ import (
 	"time"
 	//"io/ioutil"
 	"bytes"
-	"os"
 	"io"
 	"mime/multipart"
-	"path/filepath"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func Verify(req *Req) *Msg {
@@ -23,18 +23,18 @@ func Verify(req *Req) *Msg {
 
 	//  start
 	start := time.Now()
-	if len(req.Filename)>0 {
-		request,err:=newfileUploadRequest(req.URL,nil,"filename",req.Filename)
+	if len(req.Filename) > 0 {
+		request, err := newfileUploadRequest(req.URL, nil, "filename", req.Filename)
 		//request.Header.Set("Content-Type","")
-		if !goutils.CheckErr(err){
-			c:=http.Client{}
-			resp,_= c.Do(request)
+		if !goutils.CheckErr(err) {
+			c := http.Client{}
+			resp, _ = c.Do(request)
 		}
 		//beegoReq.PostFile("filename",req.Filename)
 		goto END
 	}
 	resp, err = beegoReq.DoRequest()
-	END:
+END:
 	if goutils.CheckErr(err) {
 		msg.Append(FATAL, err.Error())
 	}
@@ -51,14 +51,13 @@ func Verify(req *Req) *Msg {
 	} else {
 		msg.Append(INFO, fmt.Sprintf("time cost: %d ms / %d ms;", cost, req.Resp.Cost))
 	}
-	if resp ==nil {
-		msg.Append(ERROR,"nil response")
-	}else if req.Resp.Code != resp.StatusCode {
+	if resp == nil {
+		msg.Append(ERROR, "nil response")
+	} else if req.Resp.Code != resp.StatusCode {
 		msg.Append(ERROR, fmt.Sprintf("error code::%d gotten, %d wanted", resp.StatusCode, req.Resp.Code))
 	}
 	return msg
 }
-
 
 // Creates a new file upload http request with optional extra params
 func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*http.Request, error) {
@@ -84,7 +83,7 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 		return nil, err
 	}
 
-	req,err:= http.NewRequest("POST", uri, body)
+	req, err := http.NewRequest("POST", uri, body)
 	req.Header.Add("Content-Type", writer.FormDataContentType())
-	return req,err
+	return req, err
 }

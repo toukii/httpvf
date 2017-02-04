@@ -18,10 +18,10 @@ const (
 )
 
 type Req struct {
-	URL    string
-	Method string
-	Body   string
-	Resp   Resp
+	URL      string
+	Method   string
+	Body     string
+	Resp     Resp
 	Filename string
 }
 
