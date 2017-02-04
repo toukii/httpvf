@@ -61,26 +61,26 @@ func (m Msg) String() string {
 	logs := make([]*Log, 0, 10)
 	switch MsgLevel {
 	case "INFO":
-		logs = append(logs, m.FatalLog...)
-		logs = append(logs, m.ErrorLog...)
-		logs = append(logs, m.WarnLog...)
 		logs = append(logs, m.InfoLog...)
-	case "WARN":
-		logs = append(logs, m.FatalLog...)
-		logs = append(logs, m.ErrorLog...)
 		logs = append(logs, m.WarnLog...)
-	case "ERROR":
-		logs = append(logs, m.FatalLog...)
 		logs = append(logs, m.ErrorLog...)
+		logs = append(logs, m.FatalLog...)
+	case "WARN":
+		logs = append(logs, m.WarnLog...)
+		logs = append(logs, m.ErrorLog...)
+		logs = append(logs, m.FatalLog...)
+	case "ERROR":
+		logs = append(logs, m.ErrorLog...)
+		logs = append(logs, m.FatalLog...)
 	case "FATAL":
 		logs = append(logs, m.FatalLog...)
 	}
 	if len(logs) <= 0 {
 		return ""
 	}
-	ret := fmt.Sprintf("# %s\n", m.req.URL)
-	for i, it := range logs {
-		ret += fmt.Sprintf("%d. [%s] %s\n", i+1, it.Level, it.Out)
+	ret := fmt.Sprintf("%s\n", m.req.URL)
+	for _, it := range logs {
+		ret += fmt.Sprintf("  [%s] %s\n", it.Level, it.Out)
 	}
 	return ret
 }
