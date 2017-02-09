@@ -6,6 +6,7 @@
 # Folders
 _obj
 _test
+.idea
 vf/vf
 mock/mock
 # Architecture specific extensions/prefixes
