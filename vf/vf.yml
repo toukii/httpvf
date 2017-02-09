@@ -16,19 +16,17 @@
     code: 200
     cost: 10
     body: success
-#-
-#  url: http://upload.daoapp.io/uploadform/
-#  method: POST
-#  body: '{"name":"toukii"}'
-#  filename : vf.yml
-#  resp:
-#    code: 200
-#    cost: 10
-#    body: success
+-
+  url: http://upload.daoapp.io/loadfile/topic001
+  method: GET
+  resp:
+    code: 200
+    cost: 80
+    rebody: content\d
 -
   url: https://www.baidu.com
   method: GET
-  n: 3
+  n: 1
   resp:
     code: 200
     cost: 100

@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"sync"
+	"regexp"
 )
 
 func verify(req *Req) *Msg {
@@ -81,10 +82,15 @@ func verify(req *Req) *Msg {
 				msg.Append(ERROR, respReadErr.Error())
 			}
 			if !strings.EqualFold(req.Resp.Body,goutils.ToString(bs)){
-				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted:%s\n",goutils.ToString(bs),req.Resp.Body))
+				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted: %s\n",goutils.ToString(bs),req.Resp.Body))
 			}
 		}
 
+		if len(req.Resp.ReBody)>0 {
+			if matched,errg:=regexp.Match(req.Resp.ReBody, bs);!matched || goutils.LogCheckErr(errg){
+				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted regexp: %s\n",goutils.ToString(bs),req.Resp.ReBody))
+			}
+		}
 	}
 	return msg
 }

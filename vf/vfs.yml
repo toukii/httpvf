@@ -1,6 +1,7 @@
 -
   url: http://upload.daoapp.io/topic
   method: POST
+  n: 20
   header:
     Content-Type: "application/x-www-form-urlencoded"
   body: "title=topic001&content=content001"

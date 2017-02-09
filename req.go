@@ -11,6 +11,7 @@ type Resp struct {
 	Cost int
 	RealCost int
 	Body string
+	ReBody string // regex body
 }
 
 const (
