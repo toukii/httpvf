@@ -30,15 +30,21 @@ func main() {
 	}))
 	m.Group("/", func() {
 		m.Get("", func(ctx *macaron.Context) {
+			bd,er:=ctx.Req.Body().String()
+			fmt.Println("req-body:",bd,er)
 			fmt.Println("This is toukii,root")
 			ctx.JSON(200, newMsg("This is toukii,root", 3.14))
 		})
 		m.Get("r1", func(ctx *macaron.Context) {
+			bd,er:=ctx.Req.Body().String()
+			fmt.Println("req-body:",bd,er)
 			fmt.Println("This is toukii,r1")
 			ctx.JSON(201, newMsg("This is toukii,r1", 0.315))
 		})
 		m.Combo("r2").Post(r2)
 		m.Post("upload", func(ctx *macaron.Context) {
+			bd,er:=ctx.Req.Body().String()
+			fmt.Println("req-body:",bd,er)
 			mul, header, err := ctx.GetFile("filename")
 			fmt.Println("upload a file:", header.Filename)
 
@@ -48,6 +54,7 @@ func main() {
 			fmt.Println(err)
 
 			file, _ := os.OpenFile(header.Filename, os.O_CREATE|os.O_RDWR, 0644)
+			defer file.Close()
 			_, err2 := io.Copy(file, mul)
 			goutils.CheckErr(err2)
 			defer mul.Close()

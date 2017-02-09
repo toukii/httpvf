@@ -1,0 +1,33 @@
+-
+  url: http://localhost:4000/upload
+  method: POST
+  body: '{"name":"toukii"}'
+  filename : vf.yaml
+  resp:
+    code: 200
+    cost: 10
+    body: success
+-
+  url: http://localhost:4000/r1
+  method: GET
+  body: '{"name":"toukii"}'
+#  filename : vfs.yaml
+  resp:
+    code: 200
+    cost: 10
+    body: success
+#-
+#  url: http://upload.daoapp.io/uploadform/
+#  method: POST
+#  body: '{"name":"toukii"}'
+#  filename : vf.yaml
+#  resp:
+#    code: 200
+#    cost: 10
+#    body: success
+#-
+#  url: http://www.baidu.com
+#  method: GET
+#  resp:
+#    code: 200
+#    cost: 100

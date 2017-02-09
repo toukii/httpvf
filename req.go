@@ -20,6 +20,7 @@ const (
 type Req struct {
 	URL      string
 	Method   string
+	Header	map[string]string
 	Body     string
 	Resp     Resp
 	Filename string
@@ -59,6 +60,8 @@ func Test() {
 	req.URL = "http://upload.daoapp.io/upload/a.json"
 	req.Body = fmt.Sprintf(`{"name":"toukii"}`)
 	req.Resp.Body = "world"
+	req.Header = make(map[string]string)
+	req.Header["Content-Type"]="application/json"
 	req.Method = GET
 	reqs := []Req{req, req}
 	bs2, err := yaml.Marshal(reqs)

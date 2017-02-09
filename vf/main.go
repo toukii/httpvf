@@ -12,7 +12,7 @@ var(
 )
 
 func init() {
-	flag.StringVar(&vf,"v","vf.yaml","vf -v vf.yaml")
+	flag.StringVar(&vf,"v","vf.yml","vf -v vf.yml")
 }
 
 func main() {
@@ -35,11 +35,11 @@ func verify(vf string)  {
 }
 
 func t2() {
-	verify("vfs.yaml")
+	verify("vfs.yml")
 }
 
 func t1() {
-	verify("vf.yaml")
+	verify("vf.yml")
 }
 
 func test() {

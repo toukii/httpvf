@@ -1,0 +1,12 @@
+-
+  url: http://ad.chinaums.com/spread-site/interaction/getRandom
+  method: POST
+  header:
+    Content-Type: "application/x-www-form-urlencoded"
+  body: "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823"
+  resp:
+    code: 200
+    cost: 4000
+    body: '{"money":"0","state":"2"}'
+
+# curl -X POST -H 'Content-Type:application/x-www-form-urlencoded' --data "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823" http://ad.chinaums.com/spread-site/interaction/getRandom
