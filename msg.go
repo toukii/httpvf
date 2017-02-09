@@ -21,6 +21,25 @@ type Msg struct {
 	FatalLog []*Log
 }
 
+func (m *Msg) AppendLogs(logs []*Log)  {
+	for _,log := range logs{
+		m.AppendLog(log)
+	}
+}
+
+func (m *Msg) AppendLog(log *Log)  {
+	switch log.Level {
+	case "FATAL":
+		m.FatalLog = append(m.FatalLog, log)
+	case "ERROR":
+		m.ErrorLog = append(m.ErrorLog, log)
+	case "WARN":
+		m.WarnLog = append(m.WarnLog, log)
+	case "INFO":
+		m.InfoLog = append(m.InfoLog, log)
+	}
+}
+
 func (m *Msg) Append(level, out string) {
 	switch level {
 	case "FATAL":
@@ -54,6 +73,15 @@ func newLog(level, out string) *Log {
 		Level: level,
 		Out:   out,
 	}
+}
+
+func (m Msg) Logs() []*Log{
+	logs := make([]*Log, 0, 10)
+	logs = append(logs, m.InfoLog...)
+	logs = append(logs, m.WarnLog...)
+	logs = append(logs, m.ErrorLog...)
+	logs = append(logs, m.FatalLog...)
+	return logs
 }
 
 func (m Msg) String() string {

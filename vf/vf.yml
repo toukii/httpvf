@@ -2,7 +2,7 @@
   url: http://localhost:4000/upload
   method: POST
   body: '{"name":"toukii"}'
-  filename : vf.yaml
+  filename : vf.ymla
   resp:
     code: 200
     cost: 10
@@ -20,14 +20,15 @@
 #  url: http://upload.daoapp.io/uploadform/
 #  method: POST
 #  body: '{"name":"toukii"}'
-#  filename : vf.yaml
+#  filename : vf.yml
 #  resp:
 #    code: 200
 #    cost: 10
 #    body: success
-#-
-#  url: http://www.baidu.com
-#  method: GET
-#  resp:
-#    code: 200
-#    cost: 100
+-
+  url: https://www.baidu.com
+  method: GET
+  n: 3
+  resp:
+    code: 200
+    cost: 100

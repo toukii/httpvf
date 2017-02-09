@@ -17,9 +17,10 @@ import (
 	//"net/url"
 	"io/ioutil"
 	"strings"
+	"sync"
 )
 
-func Verify(req *Req) *Msg {
+func verify(req *Req) *Msg {
 	msg := newMsg(req)
 	var resp *http.Response
 	var request *http.Request
@@ -27,6 +28,11 @@ func Verify(req *Req) *Msg {
 
 	if len(req.Filename) > 0 {
 		request, err = newfileUploadRequest(req.URL, nil, "filename", req.Filename)
+		if goutils.CheckErr(err) {
+			msg.Append(FATAL, err.Error())
+			buf:=bytes.NewBufferString(req.Body)
+			request,err = http.NewRequest(req.Method, req.URL, buf)
+		}
 	}else{
 		buf:=bytes.NewBufferString(req.Body)
 		request,err = http.NewRequest(req.Method, req.URL, buf)
@@ -81,6 +87,43 @@ func Verify(req *Req) *Msg {
 
 	}
 	return msg
+}
+
+
+func Verify(vf string) {
+	reqs, _ := Reqs(vf)
+	var wg sync.WaitGroup
+	for _, it := range reqs {
+		wg.Add(1)
+		go func(it *Req){
+			i:=0
+			cost := 0
+			var tps string
+			logs := make([]*Log,0,64)
+			for {
+				msg := verify(it)
+				//fmt.Println(msg)
+				cost += msg.Req.Resp.RealCost
+				i++
+				logs = append(logs, msg.Logs()...)
+				if i>= it.N {
+					tps += fmt.Sprint("avg cost: ",cost/i," ms")
+					if cost == 0 {
+						tps += fmt.Sprint("TPS: +INF")
+					}else{
+						tps += fmt.Sprint(", TPS: ",1000.0*float32(i)/float32(cost))
+					}
+					msg = newMsg(it)
+					msg.Append(INFO, tps)
+					msg.AppendLogs(logs)
+					fmt.Println(msg)
+					break
+				}
+			}
+			wg.Done()
+		}(it)
+	}
+	wg.Wait()
 }
 
 // Creates a new file upload http request with optional extra params
