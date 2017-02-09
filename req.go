@@ -9,6 +9,7 @@ import (
 type Resp struct {
 	Code int
 	Cost int
+	RealCost int
 	Body string
 }
 
@@ -18,6 +19,7 @@ const (
 )
 
 type Req struct {
+	N int
 	URL      string
 	Method   string
 	Header	map[string]string

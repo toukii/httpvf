@@ -14,7 +14,7 @@ var (
 )
 
 type Msg struct {
-	req      *Req
+	Req      *Req
 	InfoLog  []*Log
 	WarnLog  []*Log
 	ErrorLog []*Log
@@ -36,7 +36,7 @@ func (m *Msg) Append(level, out string) {
 
 func newMsg(req *Req) *Msg {
 	return &Msg{
-		req:      req,
+		Req:      req,
 		InfoLog:  make([]*Log, 0, 3),
 		WarnLog:  make([]*Log, 0, 3),
 		ErrorLog: make([]*Log, 0, 3),
@@ -78,7 +78,7 @@ func (m Msg) String() string {
 	if len(logs) <= 0 {
 		return ""
 	}
-	ret := fmt.Sprintf("%s\n", m.req.URL)
+	ret := fmt.Sprintf("%s\n", m.Req.URL)
 	for _, it := range logs {
 		ret += fmt.Sprintf("  [%s] %s\n", it.Level, it.Out)
 	}

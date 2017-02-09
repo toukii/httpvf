@@ -1,12 +1,20 @@
 -
-  url: http://ad.chinaums.com/spread-site/interaction/getRandom
+  n: 1
+#  url: http://ad.chinaums.com/spread-site/interaction/getRandom
+#  url: http://umspay.izhong.me/spread-site/interaction/getRandom
+#  url: http://144.131.254.137:8080/spread-site/interaction/getRandom
+  url: http://144.131.254.137:8080/spread-site/interaction/getRandom
   method: POST
   header:
     Content-Type: "application/x-www-form-urlencoded"
-  body: "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823"
+#  body: "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823"
+  body: "customerId=00000000000000000000000000000002&interactionId=e9814b210789471cbb736251f70edde5"
   resp:
     code: 200
     cost: 4000
     body: '{"money":"0","state":"2"}'
 
 # curl -X POST -H 'Content-Type:application/x-www-form-urlencoded' --data "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823" http://ad.chinaums.com/spread-site/interaction/getRandom
+# curl -X POST -H 'Content-Type:application/x-www-form-urlencoded' --data "customerId=00000000000000000000000000000002&interactionId=e9814b210789471cbb736251f70edde5" http://umspay.izhong.me/spread-site/interaction/getRandom
+# hey -n 500 -d "customerId=00000000000000000000000000000002&interactionId=1c6bd60502774ef290b9de638f5b1823" http://ad.chinaums.com/spread-site/interaction/getRandom
+# hey -n 500 -d "customerId=00000000000000000000000000000002&interactionId=e9814b210789471cbb736251f70edde5" http://144.131.254.137:8080/spread-site/interaction/getRandom

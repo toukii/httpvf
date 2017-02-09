@@ -39,6 +39,7 @@ func Verify(req *Req) *Msg {
 		request.Header.Add(k,v)
 	}
 
+	//fmt.Printf("Request starting: %s\n",req.URL)
 	//  start
 	start := time.Now()
 
@@ -49,6 +50,7 @@ func Verify(req *Req) *Msg {
 
 	// end
 	duration := time.Now().Sub(start)
+	//fmt.Println("End.")
 
 	// fmt.Printf("Request[%s] cost:%d ms\n", req.URL, duration.Nanoseconds()/1e6)
 	cost := int(duration.Nanoseconds() / 1e6)
@@ -59,6 +61,7 @@ func Verify(req *Req) *Msg {
 	} else {
 		msg.Append(INFO, fmt.Sprintf("time cost: %d ms / %d ms;", cost, req.Resp.Cost))
 	}
+	msg.Req.Resp.RealCost = cost
 	if resp == nil {
 		msg.Append(ERROR, "nil response")
 	} else {

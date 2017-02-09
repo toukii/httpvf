@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 	"flag"
+	"sync"
 )
 
 var(
@@ -26,12 +27,29 @@ func main() {
 
 func verify(vf string)  {
 	reqs, _ := httpvf.Reqs(vf)
+	var wg sync.WaitGroup
 	for _, it := range reqs {
-		msg := httpvf.Verify(it)
-		if nil != msg {
-			fmt.Println(msg)
-		}
+		wg.Add(1)
+		go func(it *httpvf.Req){
+			i:=0
+			var cost int
+			for {
+				msg := httpvf.Verify(it)
+				if nil != msg {
+					fmt.Println(msg)
+					cost += msg.Req.Resp.RealCost
+				}
+				i++
+				if i>= it.N {
+					fmt.Println("avg cost: ",cost/i,"ms")
+					fmt.Println("TPS:",1000.0*float32(i)/float32(cost))
+					break
+				}
+			}
+			wg.Done()
+		}(it)
 	}
+	wg.Wait()
 }
 
 func t2() {
