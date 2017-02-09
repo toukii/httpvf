@@ -43,5 +43,5 @@ __vf.yml:__
 verify:
 
 ```
-vf -v test.yml
+vf -v vf.yml
 ```
