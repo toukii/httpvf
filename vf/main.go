@@ -17,7 +17,7 @@ func init() {
 func main() {
 	flag.Parse()
 	httpvf.MsgLevel = httpvf.INFO
-	// test()
+	 //test()
 	// t1()
 	//t2()
 	httpvf.Verify(vf)

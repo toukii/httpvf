@@ -1,5 +1,5 @@
 -
-  url: http://localhost:4000/upload
+  url: http://localhost:4000/
   method: POST
   body: '{"name":"toukii"}'
   filename : vf.ymla
@@ -15,14 +15,19 @@
   resp:
     code: 200
     cost: 10
-    body: success
+    regex: '{"Message*'
+    json:
+          "This is toukii,r1...":
+          - "Message"
+          "0.315":
+          - "Cost"
 -
   url: http://upload.daoapp.io/loadfile/topic001
   method: GET
   resp:
     code: 200
     cost: 80
-    rebody: content\d
+    regex: content\d
 -
   url: https://www.baidu.com
   method: GET

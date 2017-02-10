@@ -1,24 +1,21 @@
 package httpvf
 
 import (
-	//"github.com/astaxie/beego/httplib"
 	"github.com/toukii/goutils"
 
 	"fmt"
 	"time"
-	//"io/ioutil"
 	"bytes"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	//"net/http"
 	"path/filepath"
-	//"net/url"
 	"io/ioutil"
 	"strings"
 	"sync"
 	"regexp"
+	"github.com/toukii/jsnm"
 )
 
 func verify(req *Req) *Msg {
@@ -46,7 +43,6 @@ func verify(req *Req) *Msg {
 		request.Header.Add(k,v)
 	}
 
-	//fmt.Printf("Request starting: %s\n",req.URL)
 	//  start
 	start := time.Now()
 
@@ -57,9 +53,7 @@ func verify(req *Req) *Msg {
 
 	// end
 	duration := time.Now().Sub(start)
-	//fmt.Println("End.")
 
-	// fmt.Printf("Request[%s] cost:%d ms\n", req.URL, duration.Nanoseconds()/1e6)
 	cost := int(duration.Nanoseconds() / 1e6)
 	if cost > req.Resp.Cost {
 		msg.Append(ERROR, fmt.Sprintf("time cost: %d ms more than %d ms;", cost, req.Resp.Cost))
@@ -86,15 +80,28 @@ func verify(req *Req) *Msg {
 			}
 		}
 
-		if len(req.Resp.ReBody)>0 {
-			if matched,errg:=regexp.Match(req.Resp.ReBody, bs);!matched || goutils.LogCheckErr(errg){
-				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted regexp: %s\n",goutils.ToString(bs),req.Resp.ReBody))
+		if len(req.Resp.Regex)>0 {
+			if matched,errg:=regexp.Match(req.Resp.Regex, bs);!matched || goutils.LogCheckErr(errg){
+				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted regexp: %s\n",goutils.ToString(bs),req.Resp.Regex))
 			}
+		}
+		if len(req.Resp.Json)>0 {
+			vfJson(bs,req.Resp.Json, msg)
 		}
 	}
 	return msg
 }
 
+func vfJson(bs []byte, kvs map[string][]string,msg *Msg) {
+	js:=jsnm.BytesFmt(bs)
+	for wk,vs:=range kvs{
+		k:=js.PathGet(vs...).RawData().String()
+		//fmt.Println(vs,k,wk)
+		if k != wk {
+			msg.Append(ERROR, fmt.Sprintf("response body: <%s> is goten, <%s> is wanted.\n",k, wk))
+		}
+	}
+}
 
 func Verify(vf string) {
 	reqs, _ := Reqs(vf)
@@ -108,17 +115,16 @@ func Verify(vf string) {
 			logs := make([]*Log,0,64)
 			for {
 				msg := verify(it)
-				//fmt.Println(msg)
 				cost += msg.Req.Resp.RealCost
 				i++
 				logs = append(logs, msg.Logs()...)
 				if i>= it.N {
 					tps += fmt.Sprint("avg cost: ",cost/i," ms")
-					if cost == 0 {
+					/*if cost == 0 {
 						tps += fmt.Sprint("TPS: +INF")
 					}else{
 						tps += fmt.Sprint(", TPS: ",1000.0*float32(i)/float32(cost))
-					}
+					}*/
 					msg = newMsg(it)
 					msg.Append(INFO, tps)
 					msg.AppendLogs(logs)
