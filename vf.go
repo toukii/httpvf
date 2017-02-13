@@ -96,7 +96,6 @@ func vfJson(bs []byte, kvs map[string]string,msg *Msg) {
 	js:=jsnm.BytesFmt(bs)
 	for ks,wv:=range kvs{
 		k:=js.ArrGet(strings.Split(ks,",")...).RawData().String()
-		//fmt.Println(vs,k,wk)
 		if k != wv {
 			msg.Append(ERROR, fmt.Sprintf("response body: <%s> is goten, <%s> is wanted.\n",k, wv))
 		}

@@ -2,20 +2,16 @@ package main
 
 import (
 	"plugin"
+
 	"github.com/toukii/httpvf"
-	"fmt"
 )
 
 func main() {
-	pg,err:=plugin.Open("./vf.so")
+	pg,err:=plugin.Open("vf.so")
 	println(err)
-	pg.Lookup()
+	verify,_:=pg.Lookup("Verify")
+	httpvf.MsgLevel = httpvf.INFO
 
-	reqs, _ := httpvf.Reqs(vf)
-	for _, it := range reqs {
-		msg := httpvf.Verify(it)
-		if nil != msg {
-			fmt.Println(msg)
-		}
-	}
+	verify.(func(string))("../vf/vf.yml")
+
 }
