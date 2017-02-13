@@ -12,7 +12,7 @@ type Resp struct {
 	RealCost int
 	Body string
 	Regex string // regex body
-	Json map[string][]string
+	Json map[string]string
 }
 
 const (
@@ -67,7 +67,7 @@ func Test() {
 	req.Header = make(map[string]string)
 	req.Header["Content-Type"]="application/json"
 	req.Method = GET
-	req.Resp.Json = map[string][]string{"v":[]string{"p1","p2","0","p31"}}
+	req.Resp.Json = map[string]string{"v":"p1,p2,0,p31"}
 	reqs := []Req{req, req}
 	bs2, err := yaml.Marshal(reqs)
 	goutils.CheckErr(err)

@@ -15,12 +15,11 @@
   resp:
     code: 200
     cost: 10
-    regex: '{"Message*'
+    regex: '*Message*'
     json:
-          "This is toukii,r1...":
-          - "Message"
-          "0.315":
-          - "Cost"
+          "0,Message": "This is toukii,r1..."
+          '0,Cost': "0.315"
+          '0,Map,"1"': "hi"
 -
   url: http://upload.daoapp.io/loadfile/topic001
   method: GET

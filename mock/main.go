@@ -10,6 +10,7 @@ import (
 )
 
 type Msg struct {
+	Map map[string]interface{}
 	Message string
 	Cost    float64
 }
@@ -18,6 +19,7 @@ func newMsg(msg string, cost float64) *Msg {
 	return &Msg{
 		Message: msg,
 		Cost:    cost,
+		Map: make(map[string]interface{}),
 	}
 }
 
@@ -39,7 +41,9 @@ func main() {
 			bd,er:=ctx.Req.Body().String()
 			fmt.Println("req-body:",bd,er)
 			fmt.Println("This is toukii,r1")
-			ctx.JSON(201, newMsg("This is toukii,r1", 0.315))
+			msg:=newMsg("This is toukii,r1", 0.315)
+			msg.Map["1"]="hello"
+			ctx.JSON(201, []*Msg{msg})
 		})
 		m.Combo("r2").Post(r2)
 		m.Post("upload", func(ctx *macaron.Context) {
