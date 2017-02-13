@@ -45,3 +45,58 @@ verify:
 ```
 vf -v vf.yml
 ```
+
+## 请求
+
+ - url: [请求地址]
+ 
+ - method: [请求方法]
+ 
+ - body: [请求body]
+ 
+ - header: 请求header
+
+```
+header:
+   Content-Type: "application/x-www-form-urlencoded"
+```
+
+ - filename: [上传文件名]
+
+
+## 验证返回body
+
+code: [响应码]
+cost: [响应时间，单位ms]
+body: [直接验证内容]
+regex: [正则表达式]
+
+
+### json
+
+ - 路径以","分割
+
+ - 路径若有纯数字，为数字加上""
+ 
+ - 数组下标从0开始，直接写数字
+ 
+ 例如，返回的json内容如下：
+ 
+```json
+[
+    {
+        "Map": {
+            "1": "hello"
+        },
+        "Message": "This is toukii,r1",
+        "Cost": 0.315
+    }
+]
+```
+
+验证hello的写法为：
+
+```yml
+json: 
+  '0,Map,"1"': hello
+```

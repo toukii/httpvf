@@ -17,9 +17,9 @@
     cost: 10
     regex: '*Message*'
     json:
-          "0,Message": "This is toukii,r1..."
+          "0,Message": "This is toukii,r1"
           '0,Cost': "0.315"
-          '0,Map,"1"': "hi"
+          '0,Map,"1"': hello
 -
   url: http://upload.daoapp.io/loadfile/topic001
   method: GET
