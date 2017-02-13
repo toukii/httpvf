@@ -66,10 +66,13 @@ header:
 
 ## 验证返回body
 
-code: [响应码]
-cost: [响应时间，单位ms]
-body: [直接验证内容]
-regex: [正则表达式]
+ - code: [响应码]
+ 
+ - cost: [响应时间，单位ms]
+ 
+ - body: [直接验证内容]
+ 
+ - regex: [正则表达式]
 
 
 ### json
