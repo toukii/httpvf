@@ -8,6 +8,7 @@ _obj
 _test
 .idea
 vf/vf
+pvf/pvf
 mock/mock
 # Architecture specific extensions/prefixes
 *.[568vq]
