@@ -25,9 +25,11 @@ type Req struct {
 	URL      string
 	Method   string
 	Header	map[string]string
+	Param	map[string]string
 	Body     string
 	Resp     Resp
 	Filename string
+	Interval int
 }
 
 func Reqs(filename string) (reqs []*Req, err error) {

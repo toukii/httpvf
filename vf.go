@@ -16,6 +16,7 @@ import (
 	"sync"
 	"regexp"
 	"github.com/toukii/jsnm"
+	"net/url"
 )
 
 func verify(req *Req) *Msg {
@@ -23,6 +24,15 @@ func verify(req *Req) *Msg {
 	var resp *http.Response
 	var request *http.Request
 	var err error
+
+	uu:=url.Values{}
+	for k,v:=range req.Param{
+		uu.Add(k, v)
+	}
+	enc := uu.Encode()
+	if  len(enc)>0{
+		req.URL += "?"+enc
+	}
 
 	if len(req.Filename) > 0 {
 		request, err = newfileUploadRequest(req.URL, nil, "filename", req.Filename)
@@ -105,7 +115,12 @@ func vfJson(bs []byte, kvs map[string]string,msg *Msg) {
 func Verify(vf string) {
 	reqs, _ := Reqs(vf)
 	var wg sync.WaitGroup
+	tickerMap:=make(map[string]*time.Ticker)
 	for _, it := range reqs {
+		if it.Interval >0 {
+			ticker := time.NewTicker(time.Duration(it.Interval*1e6))
+			tickerMap[it.URL]=ticker
+		}
 		wg.Add(1)
 		go func(it *Req){
 			i:=0
@@ -129,6 +144,9 @@ func Verify(vf string) {
 					msg.AppendLogs(logs)
 					fmt.Println(msg)
 					break
+				}
+				if ticker,ok:=tickerMap[it.URL]; ok {
+					<- ticker.C
 				}
 			}
 			wg.Done()

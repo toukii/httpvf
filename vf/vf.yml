@@ -11,6 +11,8 @@
   url: http://localhost:4000/r1
   method: GET
   body: '{"name":"toukii"}'
+  param:
+    a: aaaa
 #  filename : vfs.yaml
   resp:
     code: 200
@@ -23,6 +25,8 @@
 -
   url: http://upload.daoapp.io/loadfile/topic001
   method: GET
+  interval: 1000
+  n: 5
   resp:
     code: 200
     cost: 80
