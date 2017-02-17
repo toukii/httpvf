@@ -50,6 +50,10 @@ func main() {
 			bd,er:=ctx.Req.Body().String()
 			fmt.Println("req-body:",bd,er)
 			mul, header, err := ctx.GetFile("filename")
+			if goutils.CheckErr(err) {
+				ctx.JSON(403, err)
+				return
+			}
 			fmt.Println("upload a file:", header.Filename)
 
 			/*goutils.CheckErr(err)

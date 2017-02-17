@@ -1,40 +1,44 @@
 -
-  url: http://localhost:4000/
+  url: http://localhost:4000/upload
   method: POST
-  body: '{"name":"toukii"}'
-  filename : vf.ymla
+#  body: '{"name":"toukii"}'
+  filename : vf.yml
   resp:
     code: 200
     cost: 10
     body: success
--
-  url: http://localhost:4000/r1
-  method: GET
-  body: '{"name":"toukii"}'
-  param:
-    a: aaaa
-#  filename : vfs.yaml
-  resp:
-    code: 200
-    cost: 10
-    regex: '*Message*'
-    json:
-          "0,Message": "This is toukii,r1"
-          '0,Cost': "0.315"
-          '0,Map,"1"': hello
--
-  url: http://upload.daoapp.io/loadfile/topic001
-  method: GET
-  interval: 1000
-  n: 5
-  resp:
-    code: 200
-    cost: 80
-    regex: content\d
--
-  url: https://www.baidu.com
-  method: GET
-  n: 1
-  resp:
-    code: 200
-    cost: 100
+#-
+#  url: http://localhost:4000/r1
+#  method: GET
+#  body: '{"name":"toukii"}'
+#  param:
+#    a: aaaa
+#  n: 4
+#  runtinue: 3
+#  interval: 1
+#  resp:
+#    code: 201
+#    cost: 10
+#    regex: '*Message*'
+#    json:
+#          "0,Message": "This is toukii,r1"
+#          '0,Cost': "0.315"
+#          '0,Map,"1"': hello
+#-
+#  url: http://upload.daoapp.io/uploadform
+#  method: POST
+#  body: '{"name":"toukii"}'
+#  upload : vf.yml
+#  resp:
+#    code: 200
+#    cost: 10
+#    body: success
+#-
+#  url: http://upload.daoapp.io/loadfile/test.sh
+#  method: GET
+#  interval: 1000
+##  n: 8
+#  resp:
+#    code: 200
+#    cost: 80
+#    regex: content\d

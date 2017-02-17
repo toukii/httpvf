@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/toukii/goutils"
 	yaml "gopkg.in/yaml.v2"
+	"net/url"
 )
 
 type Resp struct {
@@ -30,6 +31,7 @@ type Req struct {
 	Resp     Resp
 	Filename string
 	Interval int
+	Runtine int
 }
 
 func Reqs(filename string) (reqs []*Req, err error) {
@@ -59,6 +61,26 @@ func req(in []byte) (*Req, error) {
 	}
 
 	return &req, nil
+}
+
+
+func (req *Req) Prapare() {
+	uu:=url.Values{}
+	for k,v:=range req.Param{
+		uu.Add(k, v)
+	}
+	enc := uu.Encode()
+	if  len(enc)>0{
+		req.URL += "?"+enc
+	}
+
+	if req.Runtine <=0 {
+		req.Runtine = 1
+	}
+}
+
+func (req Req) MapKey()string  {
+	return fmt.Sprintf("%s-%s",req.Method,req.URL)
 }
 
 func Test() {
