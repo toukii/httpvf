@@ -8,12 +8,12 @@ import (
 )
 
 type Resp struct {
-	Code int
-	Cost int
+	Code     int
+	Cost     int
 	RealCost int
-	Body string
-	Regex string // regex body
-	Json map[string]string
+	Body     string
+	Regex    string // regex body
+	Json     map[string]string
 }
 
 const (
@@ -22,16 +22,16 @@ const (
 )
 
 type Req struct {
-	N int
+	N        int
 	URL      string
 	Method   string
-	Header	map[string]string
-	Param	map[string]string
+	Header   map[string]string
+	Param    map[string]string
 	Body     string
 	Resp     Resp
-	Filename string
+	Upload   string
 	Interval int
-	Runtine int
+	Runtine  int
 }
 
 func Reqs(filename string) (reqs []*Req, err error) {
@@ -63,24 +63,23 @@ func req(in []byte) (*Req, error) {
 	return &req, nil
 }
 
-
 func (req *Req) Prapare() {
-	uu:=url.Values{}
-	for k,v:=range req.Param{
+	uu := url.Values{}
+	for k, v := range req.Param {
 		uu.Add(k, v)
 	}
 	enc := uu.Encode()
-	if  len(enc)>0{
-		req.URL += "?"+enc
+	if len(enc) > 0 {
+		req.URL += "?" + enc
 	}
 
-	if req.Runtine <=0 {
+	if req.Runtine <= 0 {
 		req.Runtine = 1
 	}
 }
 
-func (req Req) MapKey()string  {
-	return fmt.Sprintf("%s-%s",req.Method,req.URL)
+func (req Req) MapKey() string {
+	return fmt.Sprintf("%s-%s", req.Method, req.URL)
 }
 
 func Test() {
@@ -89,9 +88,9 @@ func Test() {
 	req.Body = fmt.Sprintf(`{"name":"toukii"}`)
 	req.Resp.Body = "world"
 	req.Header = make(map[string]string)
-	req.Header["Content-Type"]="application/json"
+	req.Header["Content-Type"] = "application/json"
 	req.Method = GET
-	req.Resp.Json = map[string]string{"v":"p1,p2,0,p31"}
+	req.Resp.Json = map[string]string{"v": "p1,p2,0,p31"}
 	reqs := []Req{req, req}
 	bs2, err := yaml.Marshal(reqs)
 	goutils.CheckErr(err)

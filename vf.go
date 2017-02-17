@@ -3,19 +3,19 @@ package httpvf
 import (
 	"github.com/toukii/goutils"
 
-	"fmt"
-	"time"
 	"bytes"
+	"fmt"
+	"github.com/toukii/jsnm"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
-	"io/ioutil"
+	"regexp"
 	"strings"
 	"sync"
-	"regexp"
-	"github.com/toukii/jsnm"
+	"time"
 )
 
 func verify(req *Req) *Msg {
@@ -24,26 +24,23 @@ func verify(req *Req) *Msg {
 	var request *http.Request
 	var err error
 	//fmt.Printf("[%s]%s\n",req.Method, req.URL)
-	if len(req.Filename) > 0 {
-		uploadFile:=req.Filename
-		//splt:=strings.Split(uploadFile,"@")
+	if len(req.Upload) > 0 {
+		splt := strings.Split(req.Upload, "@")
 		tag := "filename"
-		/*filename:=splt[0]
-		if len(splt)>1 {
+		filename := splt[0]
+		if len(splt) > 1 {
 			tag = splt[0]
 			filename = splt[1]
-		}*/
-		fmt.Println(tag, uploadFile)
-		request, err = newfileUploadRequest(req.URL, nil, tag, uploadFile)
-		if goutils.CheckErr(err) {
-			panic(err)
-			msg.Append(FATAL, err.Error())
-			buf:=bytes.NewBufferString(req.Body)
-			request,err = http.NewRequest(req.Method, req.URL, buf)
 		}
-	}else{
-		buf:=bytes.NewBufferString(req.Body)
-		request,err = http.NewRequest(req.Method, req.URL, buf)
+		request, err = newfileUploadRequest(req.URL, nil, tag, filename)
+		if goutils.CheckErr(err) {
+			msg.Append(FATAL, err.Error())
+			buf := bytes.NewBufferString(req.Body)
+			request, err = http.NewRequest(req.Method, req.URL, buf)
+		}
+	} else {
+		buf := bytes.NewBufferString(req.Body)
+		request, err = http.NewRequest(req.Method, req.URL, buf)
 	}
 	if goutils.CheckErr(err) {
 		msg.Append(FATAL, err.Error())
@@ -56,10 +53,8 @@ func verify(req *Req) *Msg {
 	//  start
 	start := time.Now()
 
-
 	c := http.Client{}
 	resp, _ = c.Do(request)
-
 
 	// end
 	duration := time.Now().Sub(start)
@@ -76,38 +71,38 @@ func verify(req *Req) *Msg {
 	if resp == nil {
 		msg.Append(ERROR, "nil response")
 	} else {
-		if resp.StatusCode !=0 && req.Resp.Code != resp.StatusCode {
+		if resp.StatusCode != 0 && req.Resp.Code != resp.StatusCode {
 			msg.Append(ERROR, fmt.Sprintf("error code::%d gotten, %d wanted", resp.StatusCode, req.Resp.Code))
 		}
-		bs,respReadErr:=ioutil.ReadAll(resp.Body)
+		bs, respReadErr := ioutil.ReadAll(resp.Body)
 		defer resp.Body.Close()
-		if len(req.Resp.Body)>0{
-			if(goutils.CheckErr(respReadErr)){
+		if len(req.Resp.Body) > 0 {
+			if goutils.CheckErr(respReadErr) {
 				msg.Append(ERROR, respReadErr.Error())
 			}
-			if !strings.EqualFold(req.Resp.Body,goutils.ToString(bs)){
-				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted: %s",goutils.ToString(bs),req.Resp.Body))
+			if !strings.EqualFold(req.Resp.Body, goutils.ToString(bs)) {
+				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted: %s", goutils.ToString(bs), req.Resp.Body))
 			}
 		}
 
-		if len(req.Resp.Regex)>0 {
-			if matched,errg:=regexp.Match(req.Resp.Regex, bs);!matched || goutils.LogCheckErr(errg){
-				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted regexp: %s",goutils.ToString(bs),req.Resp.Regex))
+		if len(req.Resp.Regex) > 0 {
+			if matched, errg := regexp.Match(req.Resp.Regex, bs); !matched || goutils.LogCheckErr(errg) {
+				msg.Append(ERROR, fmt.Sprintf("response body is: %s, not wanted regexp: %s", goutils.ToString(bs), req.Resp.Regex))
 			}
 		}
-		if len(req.Resp.Json)>0 {
-			vfJson(bs,req.Resp.Json, msg)
+		if len(req.Resp.Json) > 0 {
+			vfJson(bs, req.Resp.Json, msg)
 		}
 	}
 	return msg
 }
 
-func vfJson(bs []byte, kvs map[string]string,msg *Msg) {
-	js:=jsnm.BytesFmt(bs)
-	for ks,wv:=range kvs{
-		k:=js.ArrGet(strings.Split(ks,",")...).RawData().String()
+func vfJson(bs []byte, kvs map[string]string, msg *Msg) {
+	js := jsnm.BytesFmt(bs)
+	for ks, wv := range kvs {
+		k := js.ArrGet(strings.Split(ks, ",")...).RawData().String()
 		if k != wv {
-			msg.Append(ERROR, fmt.Sprintf("response body: <%s> is goten, <%s> is wanted.",k, wv))
+			msg.Append(ERROR, fmt.Sprintf("response body: <%s> is goten, <%s> is wanted.", k, wv))
 		}
 	}
 }
@@ -115,46 +110,46 @@ func vfJson(bs []byte, kvs map[string]string,msg *Msg) {
 func Verify(vf string) {
 	reqs, _ := Reqs(vf)
 	var wg sync.WaitGroup
-	tickerMap:=make(map[string]*time.Ticker)
-	runtineMap:=make(map[string]chan struct{})
+	tickerMap := make(map[string]*time.Ticker)
+	runtineMap := make(map[string]chan struct{})
 	for _, it := range reqs {
 		it.Prapare()
-		if it.Interval >0 {
-			ticker := time.NewTicker(time.Duration(it.Interval*1e6))
-			tickerMap[it.MapKey()]=ticker
+		if it.Interval > 0 {
+			ticker := time.NewTicker(time.Duration(it.Interval * 1e6))
+			tickerMap[it.MapKey()] = ticker
 		}
-		runtineMap[it.MapKey()] = make(chan struct{},it.Runtine)
+		runtineMap[it.MapKey()] = make(chan struct{}, it.Runtine)
 		wg.Add(1)
-		go func(it *Req){
-			i:=0
+		go func(it *Req) {
+			i := 0
 			cost := 0
 			var tps string
-			logs := make([]*Log,0,64)
-			index:=make(chan struct{},1)
+			logs := make([]*Log, 0, 64)
+			index := make(chan struct{}, 1)
 			for {
-				go func(){
-					index<-struct{}{}
+				go func() {
+					index <- struct{}{}
 					i++
 					<-index
 					msg := verify(it)
 					cost += msg.Req.Resp.RealCost
 					logs = append(logs, msg.Logs()...)
-					if i>= it.N {
+					if i >= it.N {
 						fmt.Println()
-						tps += fmt.Sprint("avg cost: ",cost/i," ms")
+						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
 						msg = newMsg(it)
 						msg.Append(INFO, tps)
 						msg.AppendLogs(logs)
 						fmt.Println(msg)
 					}
-					runtineMap[it.MapKey()]<-struct{}{}
+					runtineMap[it.MapKey()] <- struct{}{}
 				}()
 				<-runtineMap[it.MapKey()]
-				if i>=it.N{
+				if i >= it.N {
 					break
 				}
-				if ticker,ok:=tickerMap[it.MapKey()]; ok {
-					<- ticker.C
+				if ticker, ok := tickerMap[it.MapKey()]; ok {
+					<-ticker.C
 				}
 
 			}
@@ -189,6 +184,6 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 	}
 
 	req, err := http.NewRequest("POST", uri, body)
-	//req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.Header.Add("Content-Type", writer.FormDataContentType())
 	return req, err
 }
