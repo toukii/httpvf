@@ -2,11 +2,12 @@
   url: http://localhost:4000/upload2
   method: POST
 #  body: '{"name":"toukii"}'
+  body: ojZNEwcgv5We6G1Wc3WrGMbqwZvI&eijan=ojZNEwa7FYsQr0aV6k1sTeBBFRhc
   upload : filename@vf.yml
   resp:
     code: 200
     cost: 10
-    body: success
+    body: success  
 #-
 #  url: http://localhost:4000/r1
 #  method: GET
