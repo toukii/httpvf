@@ -54,15 +54,28 @@ vf -v vf.yml
  
  - body: [请求body]
  
- - header: 请求header
+ - n: [请求个数]
+ 
+ - interval: [请求间隔]
+ 
+ - runtine: [请求并发数]
+ 
+ - upload: [web前段传入的文件名（input name）]@[上传文件名]
 
+ - header: 请求的header参数，map结构
+ 
 ```
 header:
    Content-Type: "application/x-www-form-urlencoded"
 ```
+ 
+ - param: GET 请求的参数，map结构
 
- - filename: [上传文件名]
-
+```
+param:
+  name: toukii
+  position: dev-ops
+```
 
 ## 验证返回body
 
