@@ -52,7 +52,11 @@ vf -v vf.yml
  
  - method: [请求方法]
  
- - body: [请求body]
+ - body: [请求body]，可以将请求写在文件中，body的写法：
+
+```
+body: "@[filename]"
+```
  
  - n: [请求个数]
  
