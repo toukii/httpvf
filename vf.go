@@ -35,24 +35,23 @@ func verify(req *Req) *Msg {
 		request, err = newfileUploadRequest(req.URL, nil, tag, filename)
 		if goutils.CheckErr(err) {
 			msg.Append(FATAL, err.Error())
-			buf := bytes.NewBufferString(req.Body)
+			buf := reqBody(req.Body)
 			request, err = http.NewRequest(req.Method, req.URL, buf)
 		}
 	} else {
-		buf := bytes.NewBufferString(req.Body)
+		buf := reqBody(req.Body)
 		request, err = http.NewRequest(req.Method, req.URL, buf)
 	}
 	if goutils.CheckErr(err) {
 		msg.Append(FATAL, err.Error())
 	}
-	//
-	//for k,v:=range req.Header{
-	//	request.Header.Add(k,v)
-	//}
+
+	for k, v := range req.Header {
+		request.Header.Add(k, v)
+	}
 
 	//  start
 	start := time.Now()
-
 	c := http.Client{}
 	resp, _ = c.Do(request)
 
@@ -60,18 +59,21 @@ func verify(req *Req) *Msg {
 	duration := time.Now().Sub(start)
 
 	cost := int(duration.Nanoseconds() / 1e6)
-	if cost > req.Resp.Cost {
-		msg.Append(ERROR, fmt.Sprintf("time cost: %d ms more than %d ms;", cost, req.Resp.Cost))
-	} else if cost > req.Resp.Cost*3/4 {
-		msg.Append(WARN, fmt.Sprintf("time cost: %d ms near by %d ms;", cost, req.Resp.Cost))
-	} else {
-		msg.Append(INFO, fmt.Sprintf("time cost: %d ms / %d ms;", cost, req.Resp.Cost))
+	if req.Resp.Code != 0 {
+
+		if cost > req.Resp.Cost {
+			msg.Append(ERROR, fmt.Sprintf("time cost: %d ms more than %d ms;", cost, req.Resp.Cost))
+		} else if cost > req.Resp.Cost*3/4 {
+			msg.Append(WARN, fmt.Sprintf("time cost: %d ms near by %d ms;", cost, req.Resp.Cost))
+		} else {
+			msg.Append(INFO, fmt.Sprintf("time cost: %d ms / %d ms;", cost, req.Resp.Cost))
+		}
 	}
 	msg.Req.Resp.RealCost = cost
 	if resp == nil {
 		msg.Append(ERROR, "nil response")
 	} else {
-		if resp.StatusCode != 0 && req.Resp.Code != resp.StatusCode {
+		if req.Resp.Code != 0 && req.Resp.Code != resp.StatusCode {
 			msg.Append(ERROR, fmt.Sprintf("error code::%d gotten, %d wanted", resp.StatusCode, req.Resp.Code))
 		}
 		bs, respReadErr := ioutil.ReadAll(resp.Body)
@@ -97,6 +99,15 @@ func verify(req *Req) *Msg {
 	return msg
 }
 
+func reqBody(body string) *bytes.Buffer {
+	filename := strings.TrimPrefix(body, "@")
+	if filename != "" {
+		buf := goutils.ReadFile(filename)
+		return bytes.NewBuffer(buf)
+	}
+	return bytes.NewBufferString(body)
+}
+
 func vfJson(bs []byte, kvs map[string]string, msg *Msg) {
 	js := jsnm.BytesFmt(bs)
 	for ks, wv := range kvs {
@@ -108,7 +119,10 @@ func vfJson(bs []byte, kvs map[string]string, msg *Msg) {
 }
 
 func Verify(vf string) {
-	reqs, _ := Reqs(vf)
+	reqs, errvf := Reqs(vf)
+	if goutils.CheckErr(errvf) {
+		return
+	}
 	var wg sync.WaitGroup
 	tickerMap := make(map[string]*time.Ticker)
 	runtineMap := make(map[string]chan struct{})
