@@ -59,8 +59,7 @@ func verify(req *Req) *Msg {
 	duration := time.Now().Sub(start)
 
 	cost := int(duration.Nanoseconds() / 1e6)
-	if req.Resp.Code != 0 {
-
+	if req.Resp.Cost > 0 {
 		if cost > req.Resp.Cost {
 			msg.Append(ERROR, fmt.Sprintf("time cost: %d ms more than %d ms;", cost, req.Resp.Cost))
 		} else if cost > req.Resp.Cost*3/4 {
