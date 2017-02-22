@@ -45,7 +45,7 @@ func verify(req *Req) *Msg {
 	if goutils.CheckErr(err) {
 		msg.Append(FATAL, err.Error())
 	}
-
+	fmt.Printf("%#v\n", request)
 	for k, v := range req.Header {
 		request.Header.Add(k, v)
 	}
@@ -100,10 +100,8 @@ func verify(req *Req) *Msg {
 }
 
 func reqBody(body string) *bytes.Buffer {
-	filename := strings.TrimPrefix(body, "@")
-	if filename != "" {
-		buf := goutils.ReadFile(filename)
-		return bytes.NewBuffer(buf)
+	if strings.HasPrefix(body, "@") {
+		return bytes.NewBuffer(goutils.ReadFile(strings.TrimPrefix(body, "@")))
 	}
 	return bytes.NewBufferString(body)
 }
