@@ -45,7 +45,7 @@ func verify(req *Req) *Msg {
 	if goutils.CheckErr(err) {
 		msg.Append(FATAL, err.Error())
 	}
-	fmt.Printf("%#v\n", request)
+
 	for k, v := range req.Header {
 		request.Header.Add(k, v)
 	}
