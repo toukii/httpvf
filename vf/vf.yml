@@ -37,13 +37,17 @@
   resp:
     code: 200
     cost: 10
-    body: success
+  then:
+    -
+      url: http://toukii.daoapp.io/
+      method: GET
+      resp:
+        body: 1
 -
   url: http://upload.daoapp.io/loadfile/test.sh
   method: GET
   interval: 1000
-#  n: 8
+  #n: 8
   resp:
     code: 200
     cost: 80
-    regex: content\d

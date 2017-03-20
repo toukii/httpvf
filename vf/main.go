@@ -6,24 +6,24 @@ import (
 	"flag"
 )
 
-var(
+var (
 	vf string
 )
 
 func init() {
-	flag.StringVar(&vf,"v","vf.yml","vf -v vf.yml")
+	flag.StringVar(&vf, "v", "vf.yml", "vf -v vf.yml")
 }
 
 func main() {
 	flag.Parse()
 	httpvf.MsgLevel = httpvf.INFO
-	 //test()
+	//test()
 	// t1()
 	//t2()
 	httpvf.Verify(vf)
 }
 
-func verify(vf string)  {
+func verify(vf string) {
 	httpvf.Verify(vf)
 }
 

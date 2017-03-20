@@ -3,10 +3,11 @@ package httpvf
 import "fmt"
 
 const (
-	INFO  = "INFO"
-	WARN  = "WARN"
-	ERROR = "ERROR"
-	FATAL = "FATAL"
+	INFO       = "INFO"
+	WARN       = "WARN"
+	ERROR      = "ERROR"
+	FATAL      = "FATAL"
+	CONCLUSION = "CONCLUSION"
 )
 
 var (
@@ -14,21 +15,24 @@ var (
 )
 
 type Msg struct {
-	Req      *Req
-	InfoLog  []*Log
-	WarnLog  []*Log
-	ErrorLog []*Log
-	FatalLog []*Log
+	Req           *Req
+	InfoLog       []*Log
+	WarnLog       []*Log
+	ErrorLog      []*Log
+	FatalLog      []*Log
+	ConclusionLog []*Log
 }
 
-func (m *Msg) AppendLogs(logs []*Log)  {
-	for _,log := range logs{
+func (m *Msg) AppendLogs(logs []*Log) {
+	for _, log := range logs {
 		m.AppendLog(log)
 	}
 }
 
-func (m *Msg) AppendLog(log *Log)  {
+func (m *Msg) AppendLog(log *Log) {
 	switch log.Level {
+	case "CONCLUSION":
+		m.ConclusionLog = append(m.ConclusionLog, log)
 	case "FATAL":
 		m.FatalLog = append(m.FatalLog, log)
 	case "ERROR":
@@ -42,6 +46,8 @@ func (m *Msg) AppendLog(log *Log)  {
 
 func (m *Msg) Append(level, out string) {
 	switch level {
+	case "CONCLUSION":
+		m.ConclusionLog = append(m.ConclusionLog, newLog(level, out))
 	case "FATAL":
 		m.FatalLog = append(m.FatalLog, newLog(level, out))
 	case "ERROR":
@@ -55,11 +61,12 @@ func (m *Msg) Append(level, out string) {
 
 func newMsg(req *Req) *Msg {
 	return &Msg{
-		Req:      req,
-		InfoLog:  make([]*Log, 0, 3),
-		WarnLog:  make([]*Log, 0, 3),
-		ErrorLog: make([]*Log, 0, 3),
-		FatalLog: make([]*Log, 0, 3),
+		Req:           req,
+		InfoLog:       make([]*Log, 0, 3),
+		WarnLog:       make([]*Log, 0, 3),
+		ErrorLog:      make([]*Log, 0, 3),
+		FatalLog:      make([]*Log, 0, 3),
+		ConclusionLog: make([]*Log, 0, 3),
 	}
 }
 
@@ -75,12 +82,13 @@ func newLog(level, out string) *Log {
 	}
 }
 
-func (m Msg) Logs() []*Log{
+func (m Msg) Logs() []*Log {
 	logs := make([]*Log, 0, 10)
 	logs = append(logs, m.InfoLog...)
 	logs = append(logs, m.WarnLog...)
 	logs = append(logs, m.ErrorLog...)
 	logs = append(logs, m.FatalLog...)
+	logs = append(logs, m.ConclusionLog...)
 	return logs
 }
 
@@ -103,6 +111,7 @@ func (m Msg) String() string {
 	case "FATAL":
 		logs = append(logs, m.FatalLog...)
 	}
+	logs = append(logs, m.ConclusionLog...)
 	if len(logs) <= 0 {
 		return ""
 	}

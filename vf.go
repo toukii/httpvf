@@ -116,9 +116,8 @@ func vfJson(bs []byte, kvs map[string]string, msg *Msg) {
 	}
 }
 
-func Verify(vf string) {
-	reqs, errvf := Reqs(vf)
-	if goutils.CheckErr(errvf) {
+func verifys(reqs []*Req, isSync bool) {
+	if len(reqs) <= 0 {
 		return
 	}
 	var wg sync.WaitGroup
@@ -132,7 +131,7 @@ func Verify(vf string) {
 		}
 		runtineMap[it.MapKey()] = make(chan struct{}, it.Runtine)
 		wg.Add(1)
-		go func(it *Req) {
+		if isSync {
 			i := 0
 			cost := 0
 			var tps string
@@ -150,25 +149,69 @@ func Verify(vf string) {
 						fmt.Println()
 						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
 						msg = newMsg(it)
-						msg.Append(INFO, tps)
+						msg.Append(CONCLUSION, tps)
 						msg.AppendLogs(logs)
 						fmt.Println(msg)
 					}
 					runtineMap[it.MapKey()] <- struct{}{}
 				}()
 				<-runtineMap[it.MapKey()]
+				verifys(it.Then, it.Sync)
 				if i >= it.N {
 					break
 				}
-				if ticker, ok := tickerMap[it.MapKey()]; ok {
+				if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
 					<-ticker.C
 				}
-
 			}
 			wg.Done()
-		}(it)
+		} else {
+			go func(it *Req) {
+				i := 0
+				cost := 0
+				var tps string
+				logs := make([]*Log, 0, 64)
+				index := make(chan struct{}, 1)
+				for {
+					go func() {
+						index <- struct{}{}
+						i++
+						<-index
+						msg := verify(it)
+						cost += msg.Req.Resp.RealCost
+						logs = append(logs, msg.Logs()...)
+						if i >= it.N {
+							fmt.Println()
+							tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+							msg = newMsg(it)
+							msg.Append(CONCLUSION, tps)
+							msg.AppendLogs(logs)
+							fmt.Println(msg)
+						}
+						runtineMap[it.MapKey()] <- struct{}{}
+					}()
+					<-runtineMap[it.MapKey()]
+					verifys(it.Then, it.Sync)
+					if i >= it.N {
+						break
+					}
+					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
+						<-ticker.C
+					}
+				}
+				wg.Done()
+			}(it)
+		}
 	}
 	wg.Wait()
+}
+
+func Verify(vf string) {
+	reqs, errvf := Reqs(vf)
+	if goutils.LogCheckErr(errvf) {
+		return
+	}
+	verifys(reqs, false)
 }
 
 // Creates a new file upload http request with optional extra params

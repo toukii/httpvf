@@ -81,7 +81,35 @@ param:
   position: dev-ops
 ```
 
-## 验证返回body
+ - then: [下一步请求]
+
+```
+then:
+  - url: https://github.com/toukii
+  - url: https://github.com/toukii/httpvf
+```
+
+ - sync: [下一步请求的同步方式，仅约束下一级的请求]
+
+ ```
+ sync: true
+ ```
+
+_例如：_
+
+ ```
+ url: http://gocn.io
+ sync: true
+ then:
+   - url: https://github.com/toukii
+   - url: https://github.com/toukii/httpvf
+ ```
+
+ 完成`gocn.io`的请求之后，同步依次完成两个子请求。
+
+----------------------------------------
+
+## 验证响应
 
  - code: [响应码]
  
