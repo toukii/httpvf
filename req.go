@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/toukii/goutils"
 	yaml "gopkg.in/yaml.v2"
-	"net/url"
+	"strings"
 )
 
 type Resp struct {
@@ -66,15 +66,20 @@ func req(in []byte) (*Req, error) {
 }
 
 func (req *Req) Prapare() {
-	uu := url.Values{}
-	for k, v := range req.Param {
-		uu.Add(k, v)
-	}
-	enc := uu.Encode()
-	if len(enc) > 0 {
-		req.URL += "?" + enc
-	}
 
+	if len(req.Param) > 0 {
+		ss := []string{}
+		for k, v := range req.Param {
+			ss = append(ss, fmt.Sprintf("%s=%s", k, v))
+		}
+		query := strings.Join(ss, "&")
+
+		if strings.Contains(req.URL, "?") {
+			req.URL += "&" + query
+		} else {
+			req.URL += "?" + query
+		}
+	}
 	if req.Runtine <= 0 {
 		req.Runtine = 1
 	}

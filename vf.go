@@ -23,7 +23,7 @@ func verify(req *Req) *Msg {
 	var resp *http.Response
 	var request *http.Request
 	var err error
-	//fmt.Printf("[%s]%s\n",req.Method, req.URL)
+	// fmt.Printf("[%s]%s\n", req.Method, req.URL)
 	if len(req.Upload) > 0 {
 		splt := strings.Split(req.Upload, "@")
 		tag := "filename"
@@ -125,9 +125,11 @@ func verifys(reqs []*Req, isSync bool) {
 	runtineMap := make(map[string]chan struct{})
 	for _, it := range reqs {
 		it.Prapare()
+		// fmt.Println("***", it.URL)
 		if it.Interval > 0 {
 			ticker := time.NewTicker(time.Duration(it.Interval * 1e6))
 			tickerMap[it.MapKey()] = ticker
+			// fmt.Println(it.MapKey(), it.Interval)
 		}
 		runtineMap[it.MapKey()] = make(chan struct{}, it.Runtine)
 		wg.Add(1)

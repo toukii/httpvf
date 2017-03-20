@@ -1,24 +1,28 @@
 -
   url: http://upload.daoapp.io/topic
-  method: POST
-  header:
-    Content-Type: "application/x-www-form-urlencoded"
-  body: "title=topic001&content=content001"
-  resp:
-    code: 200
-    cost: 900
--
-  url: http://upload.daoapp.io/loadfile/topic001
-  method: GET
-  n: 10
-  resp:
-    code: 200
-    cost: 80
-    body: content001
--
-  url: http://upload.daoapp.io/uploadform/
-  method: POST
-  filename : vf.yml
-  resp:
-    code: 200
-    cost: 10
+  sync: false
+  n: 2
+  then:
+  -
+    url: http://upload.daoapp.io/topic1
+    n: 1
+    then:
+    -
+      url: http://upload.daoapp.io/topic11
+      n: 1
+    -
+      url: http://upload.daoapp.io/topic12
+      n: 1
+  -
+    url: http://upload.daoapp.io/topic2
+    n: 1
+    then:
+    -
+      url: http://upload.daoapp.io/topic21
+      n: 1
+    -
+      url: http://upload.daoapp.io/topic22
+      n: 4
+      interval: 1000
+      resp:
+        cost: 1
