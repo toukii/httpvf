@@ -134,51 +134,19 @@ func verifys(reqs []*Req, isSync bool) {
 		runtineMap[it.MapKey()] = make(chan struct{}, it.Runtine)
 		wg.Add(1)
 		if isSync {
-			i := 0
-			cost := 0
-			var tps string
-			logs := make([]*Log, 0, 64)
-			index := make(chan struct{}, 1)
-			for {
-				go func() {
-					index <- struct{}{}
-					i++
-					<-index
-					msg := verify(it)
-					cost += msg.Req.Resp.RealCost
-					logs = append(logs, msg.Logs()...)
-					if i >= it.N {
-						fmt.Println()
-						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
-						msg = newMsg(it)
-						msg.Append(CONCLUSION, tps)
-						msg.AppendLogs(logs)
-						fmt.Println(msg)
-					}
-					runtineMap[it.MapKey()] <- struct{}{}
-				}()
-				<-runtineMap[it.MapKey()]
-				verifys(it.Then, it.Sync)
-				if i >= it.N {
-					break
-				}
-				if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
-					<-ticker.C
-				}
-			}
-			wg.Done()
-		} else {
-			go func(it *Req) {
+			// fmt.Println("[GO]",it.URL)
 				i := 0
 				cost := 0
 				var tps string
 				logs := make([]*Log, 0, 64)
 				index := make(chan struct{}, 1)
-				for {
+				itWg:=sync.WaitGroup{}
+				for i=0;i<it.N;{
+					itWg.Add(1)
+					index <- struct{}{}
+					i++
 					go func() {
-						index <- struct{}{}
-						i++
-						<-index
+						runtineMap[it.MapKey()] <- struct{}{}
 						msg := verify(it)
 						cost += msg.Req.Resp.RealCost
 						logs = append(logs, msg.Logs()...)
@@ -190,17 +158,53 @@ func verifys(reqs []*Req, isSync bool) {
 							msg.AppendLogs(logs)
 							fmt.Println(msg)
 						}
-						runtineMap[it.MapKey()] <- struct{}{}
+						<-runtineMap[it.MapKey()]
+						verifys(it.Then, it.Sync)
+						itWg.Done()
 					}()
-					<-runtineMap[it.MapKey()]
-					verifys(it.Then, it.Sync)
-					if i >= it.N {
-						break
-					}
+					<-index
 					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
 						<-ticker.C
 					}
 				}
+				itWg.Wait()
+				wg.Done()
+		} else {
+			go func(it *Req) {
+				// fmt.Println("[GO]",it.URL)
+				i := 0
+				cost := 0
+				var tps string
+				logs := make([]*Log, 0, 64)
+				index := make(chan struct{}, 1)
+				itWg:=sync.WaitGroup{}
+				for i=0;i<it.N;{
+					itWg.Add(1)
+					index <- struct{}{}
+					i++
+					go func() {
+						runtineMap[it.MapKey()] <- struct{}{}
+						msg := verify(it)
+						cost += msg.Req.Resp.RealCost
+						logs = append(logs, msg.Logs()...)
+						if i >= it.N {
+							fmt.Println()
+							tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+							msg = newMsg(it)
+							msg.Append(CONCLUSION, tps)
+							msg.AppendLogs(logs)
+							fmt.Println(msg)
+						}
+						<-runtineMap[it.MapKey()]
+						verifys(it.Then, it.Sync)
+						itWg.Done()
+					}()
+					<-index
+					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
+						<-ticker.C
+					}
+				}
+				itWg.Wait()
 				wg.Done()
 			}(it)
 		}
@@ -214,6 +218,7 @@ func Verify(vf string) {
 		return
 	}
 	verifys(reqs, false)
+	fmt.Println("END")
 }
 
 // Creates a new file upload http request with optional extra params
