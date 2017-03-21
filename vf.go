@@ -50,11 +50,16 @@ func verify(req *Req) *Msg {
 		request.Header.Add(k, v)
 	}
 
+	c := http.Client{}
+	if req.Timeout > 0 {
+		c.Timeout = time.Duration(req.Timeout * 1e6)
+	} else {
+		c.Timeout = 5e9
+	}
+
 	//  start
 	start := time.Now()
-	c := http.Client{}
 	resp, _ = c.Do(request)
-
 	// end
 	duration := time.Now().Sub(start)
 
@@ -135,40 +140,40 @@ func verifys(reqs []*Req, isSync bool) {
 		wg.Add(1)
 		if isSync {
 			// fmt.Println("[GO]",it.URL)
-				i := 0
-				cost := 0
-				var tps string
-				logs := make([]*Log, 0, 64)
-				index := make(chan struct{}, 1)
-				itWg:=sync.WaitGroup{}
-				for i=0;i<it.N;{
-					itWg.Add(1)
-					index <- struct{}{}
-					i++
-					go func() {
-						runtineMap[it.MapKey()] <- struct{}{}
-						msg := verify(it)
-						cost += msg.Req.Resp.RealCost
-						logs = append(logs, msg.Logs()...)
-						if i >= it.N {
-							fmt.Println()
-							tps += fmt.Sprint("avg cost: ", cost/i, " ms")
-							msg = newMsg(it)
-							msg.Append(CONCLUSION, tps)
-							msg.AppendLogs(logs)
-							fmt.Println(msg)
-						}
-						<-runtineMap[it.MapKey()]
-						verifys(it.Then, it.Sync)
-						itWg.Done()
-					}()
-					<-index
-					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
-						<-ticker.C
+			i := 0
+			cost := 0
+			var tps string
+			logs := make([]*Log, 0, 64)
+			index := make(chan struct{}, 1)
+			itWg := sync.WaitGroup{}
+			for i = 0; i < it.N; {
+				itWg.Add(1)
+				index <- struct{}{}
+				i++
+				go func() {
+					runtineMap[it.MapKey()] <- struct{}{}
+					msg := verify(it)
+					cost += msg.Req.Resp.RealCost
+					logs = append(logs, msg.Logs()...)
+					if i >= it.N {
+						fmt.Println()
+						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+						msg = newMsg(it)
+						msg.Append(CONCLUSION, tps)
+						msg.AppendLogs(logs)
+						fmt.Println(msg)
 					}
+					<-runtineMap[it.MapKey()]
+					verifys(it.Then, it.Sync)
+					itWg.Done()
+				}()
+				<-index
+				if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
+					<-ticker.C
 				}
-				itWg.Wait()
-				wg.Done()
+			}
+			itWg.Wait()
+			wg.Done()
 		} else {
 			go func(it *Req) {
 				// fmt.Println("[GO]",it.URL)
@@ -177,8 +182,8 @@ func verifys(reqs []*Req, isSync bool) {
 				var tps string
 				logs := make([]*Log, 0, 64)
 				index := make(chan struct{}, 1)
-				itWg:=sync.WaitGroup{}
-				for i=0;i<it.N;{
+				itWg := sync.WaitGroup{}
+				for i = 0; i < it.N; {
 					itWg.Add(1)
 					index <- struct{}{}
 					i++
@@ -218,7 +223,6 @@ func Verify(vf string) {
 		return
 	}
 	verifys(reqs, false)
-	fmt.Println("END")
 }
 
 // Creates a new file upload http request with optional extra params

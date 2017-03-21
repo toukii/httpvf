@@ -1,11 +1,12 @@
 -
   url: http://upload.daoapp.io/topic
   n: 3
+  timeout: 1000
   resp:
     cost: 1
   runtine: 4
   interval: 1
-  sync: false
+  sync: true
   then:
   -
     url: http://upload.daoapp.io/topic1
@@ -22,21 +23,11 @@
     n: 2
     then:
     -
-      url: http://upload.daoapp.io/topic21
+      url: http://upload.daoapp.io/topic21111111111111111111111
       n: 1
     -
-      url: http://upload.daoapp.io/topic22
+      url: http://upload.daoapp.io/topic22222222222222222222222
       n: 2
       interval: 500
       resp:
         cost: 1
--
-  url: http://upload.daoapp.io/topic1111111111111111111
-  n: 2
-  resp:
-    code: 200
--
-  url: http://upload.daoapp.io/topic222222222222222222
-  n: 1
-  resp:
-    code: 200

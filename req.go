@@ -32,6 +32,7 @@ type Req struct {
 	Upload   string
 	Interval int
 	Runtine  int
+	Timeout  int64
 	Then     []*Req
 	Sync     bool // 根请求（第一个请求）为异步模式，默认同一层请求为异步模式
 }
