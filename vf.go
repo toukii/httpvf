@@ -139,7 +139,7 @@ func verifys(reqs []*Req, isSync bool) {
 		runtineMap[it.MapKey()] = make(chan struct{}, it.Runtine)
 		wg.Add(1)
 		if isSync {
-			// fmt.Println("[GO]",it.URL)
+			// fmt.Println("[sync GO]", it.URL)
 			i := 0
 			cost := 0
 			var tps string
@@ -155,14 +155,14 @@ func verifys(reqs []*Req, isSync bool) {
 					msg := verify(it)
 					cost += msg.Req.Resp.RealCost
 					logs = append(logs, msg.Logs()...)
-					if i >= it.N {
+					/*if i >= it.N {
 						fmt.Println()
 						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
 						msg = newMsg(it)
 						msg.Append(CONCLUSION, tps)
 						msg.AppendLogs(logs)
 						fmt.Println(msg)
-					}
+					}*/
 					<-runtineMap[it.MapKey()]
 					verifys(it.Then, it.Sync)
 					itWg.Done()
@@ -173,10 +173,18 @@ func verifys(reqs []*Req, isSync bool) {
 				}
 			}
 			itWg.Wait()
+			////////////////////////////
+			fmt.Println()
+			tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+			msg := newMsg(it)
+			msg.Append(CONCLUSION, tps)
+			msg.AppendLogs(logs)
+			fmt.Println(msg)
+			////////////////////////////
 			wg.Done()
 		} else {
 			go func(it *Req) {
-				// fmt.Println("[GO]",it.URL)
+				// fmt.Println("[GO]", it.URL)
 				i := 0
 				cost := 0
 				var tps string
@@ -192,17 +200,11 @@ func verifys(reqs []*Req, isSync bool) {
 						msg := verify(it)
 						cost += msg.Req.Resp.RealCost
 						logs = append(logs, msg.Logs()...)
-						if i >= it.N {
-							fmt.Println()
-							tps += fmt.Sprint("avg cost: ", cost/i, " ms")
-							msg = newMsg(it)
-							msg.Append(CONCLUSION, tps)
-							msg.AppendLogs(logs)
-							fmt.Println(msg)
-						}
+
 						<-runtineMap[it.MapKey()]
 						verifys(it.Then, it.Sync)
 						itWg.Done()
+						// fmt.Println("DONE")
 					}()
 					<-index
 					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
@@ -210,6 +212,14 @@ func verifys(reqs []*Req, isSync bool) {
 					}
 				}
 				itWg.Wait()
+				////////////////////////////
+				fmt.Println()
+				tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+				msg := newMsg(it)
+				msg.Append(CONCLUSION, tps)
+				msg.AppendLogs(logs)
+				fmt.Println(msg)
+				////////////////////////////
 				wg.Done()
 			}(it)
 		}
