@@ -157,7 +157,11 @@ func verifys(reqs []*Req, isSync bool) {
 					logs = append(logs, msg.Logs()...)
 					/*if i >= it.N {
 						fmt.Println()
+						if i>0{
 						tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+						}else{
+						tps += fmt.Sprint("avg cost: ", cost, " ms")
+						}
 						msg = newMsg(it)
 						msg.Append(CONCLUSION, tps)
 						msg.AppendLogs(logs)
@@ -175,7 +179,11 @@ func verifys(reqs []*Req, isSync bool) {
 			itWg.Wait()
 			////////////////////////////
 			fmt.Println()
-			tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+			if i > 0 {
+				tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+			} else {
+				tps += fmt.Sprint("avg cost: ", cost, " ms")
+			}
 			msg := newMsg(it)
 			msg.Append(CONCLUSION, tps)
 			msg.AppendLogs(logs)
@@ -214,7 +222,11 @@ func verifys(reqs []*Req, isSync bool) {
 				itWg.Wait()
 				////////////////////////////
 				fmt.Println()
-				tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+				if i > 0 {
+					tps += fmt.Sprint("avg cost: ", cost/i, " ms")
+				} else {
+					tps += fmt.Sprint("avg cost: ", cost, " ms")
+				}
 				msg := newMsg(it)
 				msg.Append(CONCLUSION, tps)
 				msg.AppendLogs(logs)
