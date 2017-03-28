@@ -212,7 +212,6 @@ func verifys(reqs []*Req, isSync bool) {
 						<-runtineMap[it.MapKey()]
 						verifys(it.Then, it.Sync)
 						itWg.Done()
-						// fmt.Println("DONE")
 					}()
 					<-index
 					if ticker, ok := tickerMap[it.MapKey()]; it.Interval > 0 && ok {
@@ -244,6 +243,7 @@ func Verify(vf string) {
 	if goutils.LogCheckErr(errvf) {
 		return
 	}
+	// fmt.Printf("%#V\n", reqs)
 	verifys(reqs, false)
 }
 

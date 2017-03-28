@@ -84,6 +84,9 @@ func (req *Req) Prapare() {
 	if req.Runtine <= 0 {
 		req.Runtine = 1
 	}
+	if req.N <= 0 {
+		req.N = 1
+	}
 }
 
 func (req Req) MapKey() string {
