@@ -114,7 +114,12 @@ func reqBody(body string) *bytes.Buffer {
 func vfJson(bs []byte, kvs map[string]string, msg *Msg) {
 	js := jsnm.BytesFmt(bs)
 	for ks, wv := range kvs {
-		k := js.ArrGet(strings.Split(ks, ",")...).RawData().String()
+		kss:=strings.Split(ks, ",")
+		ikss:=make([]interface{},len(kss))
+		for i := 0; i < len(kss); i++ {
+			ikss[i]=kss[i]
+		}
+		k := js.ArrPath(ikss...).RawData().String()
 		if k != wv {
 			msg.Append(ERROR, fmt.Sprintf("response body: <%s> is goten, <%s> is wanted.", k, wv))
 		}
