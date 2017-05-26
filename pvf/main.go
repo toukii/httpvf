@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	pg,err:=plugin.Open("vf.so")
+	pg, err := plugin.Open("vf.so")
 	println(err)
-	verify,_:=pg.Lookup("Verify")
+	verify, _ := pg.Lookup("Verify")
 	httpvf.MsgLevel = httpvf.INFO
 
 	verify.(func(string))("../vf/vf.yml")
